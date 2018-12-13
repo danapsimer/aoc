@@ -1,0 +1,130 @@
+[A H J D B E M N F Q U P V X G C T Y L W Z K S R O I]
+1: [A H J X]
+1: starting A
+1: starting H
+1: starting J
+1: starting X
+61: completed A
+68: completed H
+70: completed J
+71: [D U]
+71: starting D
+71: starting U
+84: completed X
+134: completed D
+135: [B E N]
+135: starting B
+135: starting E
+135: starting N
+151: completed U
+196: completed B
+197: [M Q T]
+197: starting M
+197: starting Q
+197: starting T
+199: completed E
+200: [G]
+200: starting G
+208: completed N
+209: [F P]
+209: starting F
+210: [P]
+211: [P]
+212: [P]
+213: [P]
+214: [P]
+215: [P]
+216: [P]
+217: [P]
+218: [P]
+219: [P]
+220: [P]
+221: [P]
+222: [P]
+223: [P]
+224: [P]
+225: [P]
+226: [P]
+227: [P]
+228: [P]
+229: [P]
+230: [P]
+231: [P]
+232: [P]
+233: [P]
+234: [P]
+235: [P]
+236: [P]
+237: [P]
+238: [P]
+239: [P]
+240: [P]
+241: [P]
+242: [P]
+243: [P]
+244: [P]
+245: [P]
+246: [P]
+247: [P]
+248: [P]
+249: [P]
+250: [P]
+251: [P]
+252: [P]
+253: [P]
+254: [P]
+255: [P]
+256: [P]
+257: [P]
+258: [P]
+259: [P]
+260: [P]
+261: [P]
+262: [P]
+263: [P]
+264: [P]
+265: [P]
+266: [P]
+266: completed G
+266: starting P
+267: [Y]
+268: [Y]
+269: [Y]
+269: completed M
+269: starting Y
+273: completed Q
+274: [V]
+274: completed F
+274: starting V
+276: completed T
+341: completed P
+353: completed Y
+355: completed V
+356: [C]
+356: starting C
+418: completed C
+419: [L]
+419: starting L
+490: completed L
+491: [W]
+491: starting W
+573: completed W
+574: [Z]
+574: starting Z
+659: completed Z
+660: [K]
+660: starting K
+730: completed K
+731: [S]
+731: starting S
+809: completed S
+810: [R]
+810: starting R
+887: completed R
+888: [O]
+888: starting O
+962: completed O
+963: [I]
+963: starting I
+1031: completed I
+1031

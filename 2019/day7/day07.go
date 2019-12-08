@@ -2,7 +2,6 @@ package main
 
 import (
 	"aoc/2019/intCode"
-	"fmt"
 	"log"
 	"os"
 )
@@ -105,21 +104,20 @@ func RunPermutationPart2(prg *intCode.IntCodeProgram, p string) int {
 		go func(n int, a *intCode.IntCodeProgram) {
 			a.RunProgram()
 		}(n, a)
-		go func(n int, a *intCode.IntCodeProgram) {
+		nn := n + 1
+		if nn >= len(amplifiers) {
+			nn = 0
+		}
+		aa := amplifiers[nn]
+		go func(n, nn int, a, aa *intCode.IntCodeProgram) {
 			for output := range a.GetOutput() {
-				nn := n + 1
-				if nn >= len(amplifiers) {
-					nn = 0
-				}
-				if nn != 0 || amplifiers[n].IsRunning() {
-					log.Printf("relaying output of amplifier %d to %d", n, nn)
+				if nn != 0 || a.IsRunning() && aa.IsRunning() {
 					amplifiers[nn].GetInput() <- output
 				} else if nn == 0 {
-					log.Printf("sending final output: %d", output)
 					seriesOutput <- output
 				}
 			}
-		}(n, a)
+		}(n, nn, a, aa)
 	}
 
 	for n, c := range p {
@@ -149,6 +147,6 @@ func FindHighestOutputPart2(prg *intCode.IntCodeProgram) int {
 }
 func main() {
 	prg := intCode.ReadIntCodeProgram(os.Stdin)
-	fmt.Printf("part01 = %d\n", FindHighestOutput(prg))
-	fmt.Printf("part02 = %d\n", FindHighestOutputPart2(prg))
+	log.Printf("part01 = %d\n", FindHighestOutput(prg))
+	log.Printf("part02 = %d\n", FindHighestOutputPart2(prg))
 }

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -47,7 +46,6 @@ func ReadIntCodeProgram(reader io.Reader) *IntCodeProgram {
 		}
 		program = append(program, programSegment...)
 	}
-	log.Printf("program = %v", program)
 	return NewIntCodeProgram(program)
 }
 

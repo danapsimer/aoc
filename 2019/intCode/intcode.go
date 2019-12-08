@@ -1,10 +1,18 @@
 package intCode
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"log"
+	"strconv"
+	"strings"
+)
 
 type IntCodeProgram struct {
 	program []int
-	in      <-chan int
+	running bool
+	in      chan int
 	out     chan int
 }
 
@@ -14,21 +22,50 @@ type parameter struct {
 }
 
 func NewIntCodeProgram(program []int) *IntCodeProgram {
-	return NewIntCodeProgramWithInput(program, nil)
-}
-
-func NewIntCodeProgramWithInput(program []int, in <-chan int) *IntCodeProgram {
 	cpy := make([]int, len(program))
 	copy(cpy, program)
-	return &IntCodeProgram{cpy, in, make(chan int)}
+	return &IntCodeProgram{cpy, false, make(chan int,10), make(chan int,10)}
+}
+
+func ReadIntCodeProgram(reader io.Reader) *IntCodeProgram {
+	scanner := bufio.NewScanner(reader)
+	program := make([]int, 0, 1000)
+	for scanner.Scan() {
+		text := scanner.Text()
+		text = strings.Trim(text, " \t")
+		programStrs := strings.Split(text, ",")
+		programSegment := make([]int, 0, len(programStrs))
+		for _, s := range programStrs {
+			s = strings.Trim(s, " \t")
+			if len(s) > 0 {
+				v, err := strconv.Atoi(s)
+				if err != nil {
+					panic(err)
+				}
+				programSegment = append(programSegment, v)
+			}
+		}
+		program = append(program, programSegment...)
+	}
+	log.Printf("program = %v", program)
+	return NewIntCodeProgram(program)
+}
+
+func (prg *IntCodeProgram) Copy() *IntCodeProgram {
+	return NewIntCodeProgram(prg.program)
 }
 
 func (prg *IntCodeProgram) GetOutput() <-chan int {
 	return prg.out
 }
-
+func (prg *IntCodeProgram) GetInput() chan<- int {
+	return prg.in
+}
 func (prg *IntCodeProgram) GetProgram() []int {
 	return prg.program
+}
+func (prg *IntCodeProgram) IsRunning() bool {
+	return prg.running
 }
 
 func (prg *IntCodeProgram) get(p *parameter) int {
@@ -66,6 +103,10 @@ func (icp *IntCodeProgram) extractParameters(pos, n int) []*parameter {
 }
 
 func (icp *IntCodeProgram) RunProgram() {
+	icp.running = true
+	defer func() {
+		icp.running = false
+	}()
 	for pos := 0; pos < len(icp.program); {
 		switch (icp.program[pos] % 100) {
 		case 1:

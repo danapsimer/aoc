@@ -21,10 +21,9 @@ func main() {
 				panic(err)
 			}
 		}
-		in := make(chan int)
-		prg := intCode.NewIntCodeProgramWithInput(program, in)
+		prg := intCode.NewIntCodeProgram(program)
 		go prg.RunProgram()
-		in <- 5
+		prg.GetInput() <- 5
 		var o int
 		for o = range prg.GetOutput() {
 			fmt.Printf("%d,", o)

@@ -2,6 +2,9 @@ package intCode
 
 import (
 	"github.com/stretchr/testify/assert"
+	"log"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -120,13 +123,44 @@ var (
 
 func TestIntCodeProgram_RunProgram(t *testing.T) {
 	for i, inputProgram := range inputPrograms {
-		inChan := make(chan int)
-		prg := NewIntCodeProgramWithInput(inputProgram, inChan)
+		prg := NewIntCodeProgram(inputProgram)
 		go prg.RunProgram()
 		outputs := make([]int, 0, 100)
 		go func() {
 			for _, in := range inputs[i] {
-				inChan <- in
+				prg.GetInput() <- in
+			}
+		}()
+		for o := range prg.GetOutput() {
+			outputs = append(outputs, o)
+		}
+		if !assert.ObjectsAreEqualValues(expectedOutputs[i], outputs) {
+			t.Errorf("outputs are not equal: expected %v and got %v", expectedOutputs[i], outputs)
+		}
+		if !assert.ObjectsAreEqualValues(outputPrograms[i], prg.GetProgram()) {
+			t.Errorf("programs are not equal: expected \n      %v\nand got %v", outputPrograms[i], prg.GetProgram())
+		}
+	}
+}
+
+func TestReadIntCodeProgramWithInput(t *testing.T) {
+	for i, inputProgram := range inputPrograms {
+		inputProgramStr := ""
+		for p, ip := range inputProgram {
+			if p%10 == 9 {
+				inputProgramStr += "\n\t"
+			} else if p > 0 {
+				inputProgramStr += ", "
+			}
+			inputProgramStr += strconv.Itoa(ip)
+		}
+		log.Printf("inputProgramStr = %s", inputProgramStr)
+		prg := ReadIntCodeProgram(strings.NewReader(inputProgramStr))
+		go prg.RunProgram()
+		outputs := make([]int, 0, 100)
+		go func() {
+			for _, in := range inputs[i] {
+				prg.GetInput() <- in
 			}
 		}()
 		for o := range prg.GetOutput() {

@@ -3,14 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math/big"
 	"os"
-)
-
-var (
-	three = big.NewInt(3)
-	two   = big.NewInt(2)
-	zero  = big.NewInt(0)
 )
 
 func calcMass(mass int) int {

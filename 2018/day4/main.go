@@ -18,7 +18,7 @@ const (
 )
 
 var (
-	eventNames = [...]string {
+	eventNames = [...]string{
 		"Guard Begins Duty",
 		"Falls Asleep",
 		"Wakes Up",
@@ -26,7 +26,7 @@ var (
 )
 
 func (et eventType) String() string {
-	return eventNames[et];
+	return eventNames[et]
 }
 
 type event struct {
@@ -109,5 +109,5 @@ func main() {
 			}
 		}
 	}
-	fmt.Printf("Guard #%d, Minute: %d, answer %d\n", guardSelected, minuteSelected, guardSelected * minuteSelected)
+	fmt.Printf("Guard #%d, Minute: %d, answer %d\n", guardSelected, minuteSelected, guardSelected*minuteSelected)
 }

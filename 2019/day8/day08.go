@@ -6,13 +6,14 @@ import (
 	"math"
 	"os"
 )
+
 const (
 	layerSize = 25 * 6
 )
 
 func main() {
-	aggregateLayer := make([]byte,layerSize)
-	for i := range aggregateLayer  {
+	aggregateLayer := make([]byte, layerSize)
+	for i := range aggregateLayer {
 		aggregateLayer[i] = '2'
 	}
 
@@ -25,9 +26,9 @@ func main() {
 			if b > 0 {
 				panic(fmt.Sprintf("bytes are left at the end of the file: %v", layer))
 			}
-			break;
+			break
 		}
-		if err !=  nil {
+		if err != nil {
 			panic(err)
 		}
 		if b != layerSize {
@@ -57,10 +58,10 @@ func main() {
 			twoCount += 1
 		}
 	}
-	fmt.Printf("part01 = %d\n", oneCount * twoCount)
+	fmt.Printf("part01 = %d\n", oneCount*twoCount)
 	fmt.Printf("part02 = %s\n", string(aggregateLayer))
-	for p := 0; p < len(aggregateLayer); p+= 25 {
-		line := aggregateLayer[p:p+25]
+	for p := 0; p < len(aggregateLayer); p += 25 {
+		line := aggregateLayer[p : p+25]
 		for _, c := range line {
 			if c == '1' {
 				fmt.Print("X")

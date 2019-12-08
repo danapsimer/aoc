@@ -18,8 +18,7 @@ func TestCheckPassword(t *testing.T) {
 	if checkPassword(223450) {
 		t.Errorf("223450 should fail check")
 	}
-	if checkPassword( 123789 ) {
+	if checkPassword(123789) {
 		t.Errorf("123789 should fail check")
 	}
 }
-

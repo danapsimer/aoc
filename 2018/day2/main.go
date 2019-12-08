@@ -24,10 +24,10 @@ func hasOneDiff(l1, l2 string) (hasOnlyOneDiff bool, common string) {
 }
 
 func main() {
-	lines := make([]string,0,250)
+	lines := make([]string, 0, 250)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		lines = append(lines,scanner.Text())
+		lines = append(lines, scanner.Text())
 	}
 
 	for i1, l1 := range lines {
@@ -35,7 +35,7 @@ func main() {
 			if i1 == i2 {
 				continue
 			}
-			if ok, common := hasOneDiff(l1,l2); ok {
+			if ok, common := hasOneDiff(l1, l2); ok {
 				fmt.Println(common)
 				os.Exit(0)
 			}

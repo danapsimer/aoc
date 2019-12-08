@@ -16,7 +16,7 @@ func checkPassword(password int) bool {
 					return false
 				}
 				if last == c {
-					repeatCounts[c - '0'] += 1
+					repeatCounts[c-'0'] += 1
 				}
 			}
 			last = c
@@ -37,9 +37,9 @@ func findPasswordCount(start, end int) int {
 			count += 1
 		}
 	}
-	return count;
+	return count
 }
 
 func main() {
-	fmt.Printf("%d\n", findPasswordCount(356261, 846303));
+	fmt.Printf("%d\n", findPasswordCount(356261, 846303))
 }

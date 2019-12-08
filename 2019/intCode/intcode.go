@@ -24,7 +24,7 @@ type parameter struct {
 func NewIntCodeProgram(program []int) *IntCodeProgram {
 	cpy := make([]int, len(program))
 	copy(cpy, program)
-	return &IntCodeProgram{cpy, false, make(chan int,10), make(chan int,10)}
+	return &IntCodeProgram{cpy, false, make(chan int, 10), make(chan int, 10)}
 }
 
 func ReadIntCodeProgram(reader io.Reader) *IntCodeProgram {
@@ -108,7 +108,7 @@ func (icp *IntCodeProgram) RunProgram() {
 		icp.running = false
 	}()
 	for pos := 0; pos < len(icp.program); {
-		switch (icp.program[pos] % 100) {
+		switch icp.program[pos] % 100 {
 		case 1:
 			// Addition
 			params := icp.extractParameters(pos, 3)

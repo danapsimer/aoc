@@ -13,7 +13,7 @@ func RingOfOne(value int) *ring.Ring {
 }
 
 func PrintRing(ball int, base, current *ring.Ring) {
-	fmt.Printf("[%5d] ",ball)
+	fmt.Printf("[%5d] ", ball)
 	n := base
 	for {
 		delim := " "
@@ -37,15 +37,15 @@ func main() {
 		os.Exit(-1)
 	}
 	largestBall *= 100
-	scores := make([]int,players)
+	scores := make([]int, players)
 	circle := RingOfOne(0)
 	base := circle
 	//PrintRing(0,base,circle)
-	for ball, player := 1, 1; ball <= largestBall; ball, player = ball +1, player + 1 {
+	for ball, player := 1, 1; ball <= largestBall; ball, player = ball+1, player+1 {
 		if player > players {
 			player = 1
 		}
-		if ball % 23 == 0 {
+		if ball%23 == 0 {
 			scores[player-1] += ball
 			circle = circle.Move(-8)
 			// adjust base if base is about to be removed

@@ -17,7 +17,7 @@ const (
 )
 
 func (ss stepStatus) String() string {
-	switch (ss) {
+	switch ss {
 	case Pending:
 		return "Pending"
 	case Ready:

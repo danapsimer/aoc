@@ -33,7 +33,7 @@ const (
 
 var (
 	GoblinDamage = 3
-	ElfDamage = 3
+	ElfDamage    = 3
 )
 
 func (ct CellType) String() string {
@@ -152,7 +152,7 @@ func (npc *NPC) FindTarget() *NPC {
 }
 
 func (npc *NPC) String() string {
-	return fmt.Sprintf("%s(%d)",npc.npcType.String(), npc.hp)
+	return fmt.Sprintf("%s(%d)", npc.npcType.String(), npc.hp)
 }
 
 type Cell struct {
@@ -251,7 +251,7 @@ func (b *Board) findPaths(depth int, depths map[*Cell]int, start, current *Cell,
 				path[i], path[len(path)-i-1] = path[len(path)-i-1], path[i]
 			}
 			return [][]*Cell{path}
-		} else if p.isOpen() && depths[p] == depth - 1 {
+		} else if p.isOpen() && depths[p] == depth-1 {
 			rpaths := b.findPaths(depth-1, depths, start, p, path)
 			if rpaths != nil {
 				paths = append(paths, rpaths...)
@@ -262,9 +262,9 @@ func (b *Board) findPaths(depth int, depths map[*Cell]int, start, current *Cell,
 }
 
 func (b *Board) GetAdjacent(c *Cell) []*Cell {
-	cells := make([]*Cell,4)
+	cells := make([]*Cell, 4)
 	for i := 0; i < len(dx); i++ {
-		cells[i] = b.Cell(c.X+dx[i],c.Y+dy[i])
+		cells[i] = b.Cell(c.X+dx[i], c.Y+dy[i])
 	}
 	return cells
 }
@@ -315,10 +315,10 @@ func (b *Board) SetCell(x, y int, cell *Cell) {
 func (b *Board) String() string {
 	var buf bytes.Buffer
 	for _, row := range b.cells {
-		npcs := make([]*NPC,0,len(row))
+		npcs := make([]*NPC, 0, len(row))
 		for _, c := range row {
 			if c.npc != nil {
-				npcs = append(npcs,c.npc)
+				npcs = append(npcs, c.npc)
 			}
 			if c.npc != nil {
 				buf.WriteString(c.npc.npcType.String())
@@ -373,7 +373,7 @@ func (b *Board) RunBattle() int {
 		t += 1
 	}
 	fmt.Printf("final: #%d:\n%s\n", t, b.String())
-	return (t-1) * b.SumHp()
+	return (t - 1) * b.SumHp()
 }
 
 func LoadBoard(reader io.Reader) *Board {
@@ -415,7 +415,7 @@ func LoadBoard(reader io.Reader) *Board {
 	return board
 }
 
-func (b* Board) ElfCount() int {
+func (b *Board) ElfCount() int {
 	sum := 0
 	for _, npc := range b.npcs {
 		if npc != nil && npc.npcType == Elf {
@@ -457,7 +457,7 @@ func FindAttachPowerToWin(input string) int {
 		startingElfCount := board.ElfCount()
 		fmt.Printf("Running battle with elf attack power at %d\n", ElfDamage)
 		outcome = board.RunBattle()
-		fmt.Printf("%d: start = %d, end = %d, outcome = %d\n",ElfDamage, startingElfCount, board.ElfCount(), outcome)
+		fmt.Printf("%d: start = %d, end = %d, outcome = %d\n", ElfDamage, startingElfCount, board.ElfCount(), outcome)
 		if board.ElfCount() == startingElfCount {
 			break
 		}

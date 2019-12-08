@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func contains(s []int, v int) bool{
+func contains(s []int, v int) bool {
 	for _, e := range s {
 		if e == v {
 			return true
@@ -17,14 +17,14 @@ func contains(s []int, v int) bool{
 }
 
 type repeatingStream struct {
-	reader io.Reader
+	reader  io.Reader
 	pastEOF bool
-	values []int
-	pos int
+	values  []int
+	pos     int
 }
 
 func newRepeatingStream() *repeatingStream {
-	return &repeatingStream{bufio.NewReader(os.Stdin), false, make([]int,0,1000), 0}
+	return &repeatingStream{bufio.NewReader(os.Stdin), false, make([]int, 0, 1000), 0}
 }
 
 func (rs *repeatingStream) nextValue() (int, error) {
@@ -46,8 +46,8 @@ func (rs *repeatingStream) nextValue() (int, error) {
 				rs.pastEOF = true
 				return rs.nextValue()
 			}
-			rs.values = append(rs.values,v)
-			return v, err;
+			rs.values = append(rs.values, v)
+			return v, err
 		}
 	}
 }
@@ -55,18 +55,18 @@ func (rs *repeatingStream) nextValue() (int, error) {
 func main() {
 	stream := newRepeatingStream()
 	sum := 0
-	sums := make([]int,0,1000)
+	sums := make([]int, 0, 1000)
 	for {
 		v, err := stream.nextValue()
 		if err != nil {
-			fmt.Printf("ERROR: %s\n",err.Error())
+			fmt.Printf("ERROR: %s\n", err.Error())
 			break
 		}
 		sum += v
-		if contains(sums,sum) {
+		if contains(sums, sum) {
 			break
 		}
-		sums = append(sums,sum)
+		sums = append(sums, sum)
 		if err == io.EOF {
 			break
 		}

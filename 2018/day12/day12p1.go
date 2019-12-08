@@ -67,14 +67,14 @@ func (s *Bits) ContainsAt(n int, cmp *Bits) bool {
 	if n < s.First() {
 		s.growNegative(n)
 	}
-	fmt.Printf("s.bits = %10s\n",s.bits.Text(2))
+	fmt.Printf("s.bits = %10s\n", s.bits.Text(2))
 	idx := s.zero + n
 	mask := big.NewInt(0)
-	mask = mask.Lsh(cmp.bits,uint(idx))
+	mask = mask.Lsh(cmp.bits, uint(idx))
 	fmt.Printf("mask =   %10s\n", mask.Text(2))
 	result := big.NewInt(0)
-	result = result.Xor(s.bits,mask)
-	fmt.Printf("result = %10s\n",result.Text(2))
+	result = result.Xor(s.bits, mask)
+	fmt.Printf("result = %10s\n", result.Text(2))
 	return result.Cmp(Zero) == 0
 }
 
@@ -112,7 +112,7 @@ func (s *Bits) growNegative(n int) {
 func (s *Bits) NextIndexOf(substr *Bits, start int) (int, bool) {
 	strLast := s.Last()
 	for p := start; p <= strLast; p++ {
-		if s.ContainsAt(p,substr) {
+		if s.ContainsAt(p, substr) {
 			return p, true
 		}
 	}

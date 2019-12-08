@@ -7,15 +7,14 @@ import (
 
 var (
 	serialNumber int
-	minSize = 3
-	maxSize = 3
+	minSize      = 3
+	maxSize      = 3
 )
 
-
 func init() {
-	flag.IntVar(&serialNumber,"s", -1, "the serial number to use")
-	flag.IntVar(&minSize,"mins", 3, "the minimum size to use")
-	flag.IntVar(&maxSize,"maxs", 3, "the maximum size to use")
+	flag.IntVar(&serialNumber, "s", -1, "the serial number to use")
+	flag.IntVar(&minSize, "mins", 3, "the minimum size to use")
+	flag.IntVar(&maxSize, "maxs", 3, "the maximum size to use")
 }
 
 func main() {
@@ -39,8 +38,8 @@ func main() {
 	maxPowerY := 0
 	maxPowerSize := 0
 	for size := minSize; size <= maxSize; size++ {
-		for x := 1; x <= 300 - size + 1; x++ {
-			for y := 1; y <= 300 - size + 1; y++ {
+		for x := 1; x <= 300-size+1; x++ {
+			for y := 1; y <= 300-size+1; y++ {
 				totalPower := 0
 				for dx1 := 0; dx1 < size; dx1++ {
 					for dy1 := 0; dy1 < size; dy1++ {
@@ -56,5 +55,5 @@ func main() {
 			}
 		}
 	}
-	fmt.Printf("%d,%d,%d\n",maxPowerX,maxPowerY,maxPowerSize)
+	fmt.Printf("%d,%d,%d\n", maxPowerX, maxPowerY, maxPowerSize)
 }

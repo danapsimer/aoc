@@ -7,7 +7,6 @@ import (
 	"os"
 )
 
-
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	points := make([]*point, 0, 50)

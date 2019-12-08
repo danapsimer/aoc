@@ -14,7 +14,7 @@ type Node struct {
 func ScanInt(scanner *bufio.Scanner) (int, error) {
 	var i int
 	if scanner.Scan() {
-		_, err := fmt.Sscanf(scanner.Text(),"%d", &i)
+		_, err := fmt.Sscanf(scanner.Text(), "%d", &i)
 		if err != nil {
 			return 0, fmt.Errorf("expected an integer, found %s: %s", scanner.Text(), err.Error())
 		}
@@ -24,7 +24,7 @@ func ScanInt(scanner *bufio.Scanner) (int, error) {
 	return i, nil
 }
 
-func ReadNode(scanner *bufio.Scanner) (*Node,error) {
+func ReadNode(scanner *bufio.Scanner) (*Node, error) {
 	childCount, err := ScanInt(scanner)
 	if err != nil {
 		return nil, fmt.Errorf("exepected a child count: %s", err.Error())
@@ -33,25 +33,25 @@ func ReadNode(scanner *bufio.Scanner) (*Node,error) {
 	if err != nil {
 		return nil, fmt.Errorf("expected a meta count: %s", err.Error())
 	}
-	children := make([]*Node,0,childCount)
+	children := make([]*Node, 0, childCount)
 	for childCount > 0 {
 		child, err := ReadNode(scanner)
 		if err != nil {
 			return nil, err
 		}
-		children = append(children,child)
+		children = append(children, child)
 		childCount -= 1
 	}
-	metadata := make([]int,metaCount)
+	metadata := make([]int, metaCount)
 	for metaCount > 0 {
 		meta, err := ScanInt(scanner)
 		if err != nil {
 			return nil, fmt.Errorf("expected meta data: %s", err.Error())
 		}
-		metadata = append(metadata,meta)
+		metadata = append(metadata, meta)
 		metaCount -= 1
 	}
-	return &Node{children,metadata}, nil
+	return &Node{children, metadata}, nil
 }
 
 func (n *Node) sumMetadata() int {
@@ -89,6 +89,6 @@ func main() {
 		fmt.Printf("ERROR: reading input: %s\n", err.Error())
 		os.Exit(-1)
 	}
-	fmt.Printf("sum of root = %d\n",rootNode.sumMetadata())
-	fmt.Printf("value of root = %d\n",rootNode.value())
+	fmt.Printf("sum of root = %d\n", rootNode.sumMetadata())
+	fmt.Printf("value of root = %d\n", rootNode.value())
 }

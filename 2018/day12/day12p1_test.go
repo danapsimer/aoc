@@ -8,12 +8,12 @@ import (
 func TestBits_Copy(t *testing.T) {
 	b1 := NewBitsFromString("#.#.#")
 	b2 := b1.Copy()
-	assert.Equal(t,b1,b2)
+	assert.Equal(t, b1, b2)
 }
 
 func TestBits_Set(t *testing.T) {
 	b1 := NewBitsFromString(".")
-	b1.Set(-2,true)
+	b1.Set(-2, true)
 	t.Logf("%s", b1.String())
 	b1.Set(7, true)
 	assert.Equal(t, 10, b1.Len())

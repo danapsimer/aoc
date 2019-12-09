@@ -9,10 +9,11 @@ import (
 )
 
 type IntCodeProgram struct {
-	program []int
-	running bool
-	in      chan int
-	out     chan int
+	program      []int
+	running      bool
+	in           chan int
+	out          chan int
+	relativeBase int
 }
 
 type parameter struct {
@@ -23,7 +24,7 @@ type parameter struct {
 func NewIntCodeProgram(program []int) *IntCodeProgram {
 	cpy := make([]int, len(program))
 	copy(cpy, program)
-	return &IntCodeProgram{cpy, false, make(chan int, 10), make(chan int, 10)}
+	return &IntCodeProgram{cpy, false, make(chan int, 10), make(chan int, 10), 0}
 }
 
 func ReadIntCodeProgram(reader io.Reader) *IntCodeProgram {
@@ -67,25 +68,39 @@ func (prg *IntCodeProgram) IsRunning() bool {
 }
 
 func (prg *IntCodeProgram) get(p *parameter) int {
+	address := 0
 	switch p.mode {
 	case 0:
-		return prg.program[p.value]
+		address = p.value
 	case 1:
 		return p.value
+	case 2:
+		address = p.value + prg.relativeBase
 	default:
 		panic(fmt.Sprintf("Unknown parameter mode: %d", p.mode))
 	}
+	if address >= len(prg.program) {
+		prg.program = append(prg.program, make([]int, address-len(prg.program)+1)...)
+	}
+	return prg.program[address]
 }
 
 func (prg *IntCodeProgram) put(p *parameter, value int) {
+	address := 0
 	switch p.mode {
 	case 0:
-		prg.program[p.value] = value
+		address = p.value
 	case 1:
 		panic(fmt.Sprintf("Cannot write to an immediate parameter: %d", p.mode))
+	case 2:
+		address = p.value + prg.relativeBase
 	default:
 		panic(fmt.Sprintf("Unknown parameter mode: %d", p.mode))
 	}
+	if address >= len(prg.program) {
+		prg.program = append(prg.program, make([]int, address-len(prg.program)+1)...)
+	}
+	prg.program[address] = value
 }
 
 func (icp *IntCodeProgram) extractParameters(pos, n int) []*parameter {
@@ -160,6 +175,10 @@ func (icp *IntCodeProgram) RunProgram() {
 				icp.put(params[2], 0)
 			}
 			pos += 4
+		case 9:
+			params := icp.extractParameters(pos, 1)
+			icp.relativeBase += icp.get(params[0])
+			pos += 2
 		case 99:
 			close(icp.out)
 			return

@@ -32,9 +32,17 @@ func (pts points) Find(f *point) int {
 	return -idx
 }
 
-func PaintRobot(start bool, prg *intCode.IntCodeProgram) map[point]bool {
+func PaintRobot(start bool, prg *intCode.IntCodeProgram) (panels map[point]bool) {
+	panels = make(map[point]bool)
+	defer func() {
+		if r := recover(); r != nil {
+			err, ok := r.(error)
+			if !ok || err.Error() != "send on closed channel" {
+				panic(r)
+			}
+		}
+	}()
 	go prg.RunProgram()
-	panels := make(map[point]bool)
 	pos := point{0, 0}
 	panels[pos] = start
 	dir := 0
@@ -45,7 +53,6 @@ func PaintRobot(start bool, prg *intCode.IntCodeProgram) map[point]bool {
 		} else {
 			prg.GetInput() <- 0
 		}
-		log.Printf("sent status of (%d,%d) = %v",pos.x,pos.y,c)
 		paint := <-prg.GetOutput()
 		turn := <-prg.GetOutput()
 		panels[pos] = paint == 1

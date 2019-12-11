@@ -2,7 +2,6 @@ package intCode
 
 import (
 	"github.com/stretchr/testify/assert"
-	"log"
 	"strconv"
 	"strings"
 	"testing"
@@ -176,7 +175,6 @@ func TestReadIntCodeProgramWithInput(t *testing.T) {
 			}
 			inputProgramStr += strconv.Itoa(ip)
 		}
-		log.Printf("inputProgramStr = %s", inputProgramStr)
 		prg := ReadIntCodeProgram(strings.NewReader(inputProgramStr))
 		go prg.RunProgram()
 		outputs := make([]int, 0, 100)

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -187,7 +186,7 @@ func (icp *IntCodeProgram) RunProgram() {
 			pos += 2
 		case 99:
 			close(icp.out)
-			log.Print("program finished")
+			close(icp.in)
 			return
 		default:
 			panic(fmt.Sprintf("unrecognized opcode %d at %d", icp.program[pos], pos))

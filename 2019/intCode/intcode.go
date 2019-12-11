@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -11,6 +12,7 @@ import (
 type IntCodeProgram struct {
 	program      []int
 	running      bool
+	finished     bool
 	in           chan int
 	out          chan int
 	relativeBase int
@@ -24,7 +26,7 @@ type parameter struct {
 func NewIntCodeProgram(program []int) *IntCodeProgram {
 	cpy := make([]int, len(program))
 	copy(cpy, program)
-	return &IntCodeProgram{cpy, false, make(chan int, 10), make(chan int, 10), 0}
+	return &IntCodeProgram{cpy, false, false,make(chan int), make(chan int), 0}
 }
 
 func ReadIntCodeProgram(reader io.Reader) *IntCodeProgram {
@@ -66,7 +68,9 @@ func (prg *IntCodeProgram) GetProgram() []int {
 func (prg *IntCodeProgram) IsRunning() bool {
 	return prg.running
 }
-
+func (prg *IntCodeProgram) IsFinished() bool {
+	return prg.finished
+}
 func (prg *IntCodeProgram) get(p *parameter) int {
 	address := 0
 	switch p.mode {
@@ -116,9 +120,11 @@ func (icp *IntCodeProgram) extractParameters(pos, n int) []*parameter {
 }
 
 func (icp *IntCodeProgram) RunProgram() {
+	icp.finished = false
 	icp.running = true
 	defer func() {
 		icp.running = false
+		icp.finished = true
 	}()
 	for pos := 0; pos < len(icp.program); {
 		switch icp.program[pos] % 100 {
@@ -181,6 +187,7 @@ func (icp *IntCodeProgram) RunProgram() {
 			pos += 2
 		case 99:
 			close(icp.out)
+			log.Print("program finished")
 			return
 		default:
 			panic(fmt.Sprintf("unrecognized opcode %d at %d", icp.program[pos], pos))

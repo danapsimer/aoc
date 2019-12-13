@@ -1,15 +1,16 @@
 package main
 
 import (
+	"aoc/2019/utils"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 )
 
 func TestGCD(t *testing.T) {
-	assert.EqualValues(t, 2, GCD(2, 4))
-	assert.EqualValues(t, 2, GCD(2, 6))
-	assert.EqualValues(t, 8, GCD(13, 24))
+	assert.EqualValues(t, 2, utils.GCD(2, 4))
+	assert.EqualValues(t, 2, utils.GCD(2, 6))
+	assert.EqualValues(t, 8, utils.GCD(13, 24))
 }
 
 func TestReduceSlope(t *testing.T) {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/2019/utils"
 	"bufio"
 	"io"
 	"log"
@@ -21,16 +22,6 @@ type grid struct {
 	asteroids []*node
 }
 
-// greatest common divisor (GCD) via Euclidean algorithm
-func GCD(a, b int) int {
-	for b != 0 {
-		t := b
-		b = a % b
-		a = t
-	}
-	return a
-}
-
 func ReduceSlope(dx, dy int) (int, int) {
 	adx := dx
 	if adx < 0 {
@@ -41,7 +32,7 @@ func ReduceSlope(dx, dy int) (int, int) {
 		ady = - ady
 	}
 	for {
-		gcd := GCD(adx, ady)
+		gcd := utils.GCD(adx, ady)
 		if gcd == 1 {
 			break
 		}

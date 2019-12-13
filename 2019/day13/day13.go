@@ -21,6 +21,11 @@ const (
 	Ball
 )
 
+const (
+	Height = 21
+	Width  = 44
+)
+
 var displayChars = " +#_O"
 
 func Respond(grid [][]Cell, out <-chan int) <-chan int {
@@ -64,17 +69,6 @@ func Respond(grid [][]Cell, out <-chan int) <-chan int {
 	}()
 	return scoreChan
 }
-
-func main() {
-	prg := intCode.ReadIntCodeProgram(os.Stdin)
-	log.Printf("part1 = %d", Day13Part1(prg.Copy(), NewGrid()))
-	log.Printf("part2 = %d", Day13Part2(prg.Copy(), NewGrid()))
-}
-
-const (
-	Height = 21
-	Width  = 44
-)
 
 func NewGrid() [][]Cell {
 	grid := make([][]Cell, Height)
@@ -125,7 +119,7 @@ func Day13Part2(prg *intCode.IntCodeProgram, grid [][]Cell) int {
 	ui.Render(canvas)
 
 	scoreWidget := widgets.NewParagraph()
-	scoreWidget.SetRect(0, Height+4, 20, Height+7)
+	scoreWidget.SetRect(0, Height+2, 20, Height+5)
 
 	prg.GetProgram()[0] = 2
 	go prg.RunProgram()
@@ -179,4 +173,10 @@ func Day13Part1(prg *intCode.IntCodeProgram, grid [][]Cell) int {
 		}
 	}
 	return blocks
+}
+
+func main() {
+	prg := intCode.ReadIntCodeProgram(os.Stdin)
+	log.Printf("part1 = %d", Day13Part1(prg.Copy(), NewGrid()))
+	log.Printf("part2 = %d", Day13Part2(prg.Copy(), NewGrid()))
 }

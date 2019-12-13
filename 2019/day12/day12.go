@@ -18,33 +18,19 @@ const (
 	Z
 )
 
-func (v vector) get(axis Axis) int {
-	switch axis {
-	case X:
-		return v.x
-	case Y:
-		return v.y
-	case Z:
-		return v.z
-	default:
+func (v *vector) get(axis Axis) int {
+	if axis < X || axis > Z {
 		panic(fmt.Errorf("unexpected axis value: %d", axis))
 	}
+	return v[axis]
 }
 
-func (v vector) put(axis Axis, value int) vector {
-	switch axis {
-	case X:
-		v.x = value
-		return v
-	case Y:
-		v.y = value
-		return v
-	case Z:
-		v.z = value
-		return v
-	default:
+func (v *vector) put(axis Axis, value int) *vector {
+	if axis < X || axis > Z {
 		panic(fmt.Errorf("unexpected axis value: %d", axis))
 	}
+	v[axis] = value
+	return v
 }
 
 func iabs(v int) int {
@@ -64,27 +50,32 @@ func calcGravityComponent(v1, v2 int) int {
 	}
 }
 
-type vector struct {
-	x, y, z int
-}
+type vector [3]int
 
 func (v vector) Equals(v2 vector) bool {
-	return v.x == v2.x && v.y == v2.y && v.z == v2.z
+	for idx, value := range v {
+		if v2[idx] != value {
+			return false
+		}
+	}
+	return true
 }
 
 func (v vector) Less(v2 vector) bool {
-	if v.x < v2.x {
-		return true
-	} else if v.x == v2.x && v.y < v2.y {
-		return true
-	} else if v.x == v2.x && v.y == v2.y && v.z < v2.z {
-		return true
+	for idx, value := range v {
+		if v2[idx] < value {
+			return false
+		}
 	}
-	return false
+	return true
 }
 
 func (v vector) energy() int {
-	return iabs(v.x) + iabs(v.y) + iabs(v.z)
+	sum := 0
+	for _, value := range v {
+		sum += iabs(value)
+	}
+	return sum
 }
 
 type moon struct {
@@ -154,16 +145,16 @@ func step(moons []*moon) {
 	for i, m1 := range moons {
 		for j, m2 := range moons {
 			if i != j {
-				m1.vel.x += calcGravityComponent(m1.pos.x, m2.pos.x)
-				m1.vel.y += calcGravityComponent(m1.pos.y, m2.pos.y)
-				m1.vel.z += calcGravityComponent(m1.pos.z, m2.pos.z)
+				for a := X; a <= Z; a++ {
+					m1.vel.put(a, m1.vel.get(a)+calcGravityComponent(m1.pos.get(a), m2.pos.get(a)))
+				}
 			}
 		}
 	}
 	for _, m := range moons {
-		m.pos.x += m.vel.x
-		m.pos.y += m.vel.y
-		m.pos.z += m.vel.z
+		for a := X; a <= Z; a++ {
+			m.pos.put(a, m.pos.get(a)+m.vel.get(a))
+		}
 	}
 }
 
@@ -231,9 +222,15 @@ func Day12Part2(moons Moons) int {
 	seen[X] = NewAxisStateSet()
 	seen[Y] = NewAxisStateSet()
 	seen[Z] = NewAxisStateSet()
-	seen[X].See(0, buildAxisStateVec(curr, X))
-	seen[Y].See(0, buildAxisStateVec(curr, Y))
-	seen[Z].See(0, buildAxisStateVec(curr, Z))
+	initial := []axisVec{
+		buildAxisStateVec(curr, X),
+		buildAxisStateVec(curr, Y),
+		buildAxisStateVec(curr, Z),
+	}
+	seen[X].See(0, initial[X])
+	seen[Y].See(0, initial[Y])
+	seen[Z].See(0, initial[Z])
+	compareToFirst := true
 	wg := &sync.WaitGroup{}
 	minFirstStep := -1
 	for axis := X; axis <= Z; axis++ {
@@ -251,14 +248,28 @@ func Day12Part2(moons Moons) int {
 				stepForAxis(axis, curr)
 				steps += 1
 				axisState := buildAxisStateVec(curr, axis)
-				if lastSteps, ok := seen[axis].Seen(axisState); ok {
-					done[axis] = true
-					counters[axis] = steps - lastSteps
-					if minFirstStep < 0 {
-						minFirstStep = lastSteps
+				if compareToFirst {
+					equal := true
+					for ias, as := range axisState {
+						if initial[axis][ias] != as {
+							equal = false
+							break
+						}
+					}
+					if equal {
+						done[axis] = true
+						counters[axis] = steps
 					}
 				} else {
-					seen[axis].See(steps, axisState)
+					if lastSteps, ok := seen[axis].Seen(axisState); ok {
+						done[axis] = true
+						counters[axis] = steps - lastSteps
+						if minFirstStep < 0 {
+							minFirstStep = lastSteps
+						}
+					} else {
+						seen[axis].See(steps, axisState)
+					}
 				}
 			}
 		}(axis)

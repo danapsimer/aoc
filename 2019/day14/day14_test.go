@@ -68,6 +68,13 @@ var (
 		180697,
 		2210736,
 	}
+	expectedPart2 = []int {
+		0,
+		0,
+		82892753,
+		5586022,
+		460664,
+	}
 )
 
 func TestDay14Part1(t *testing.T) {
@@ -76,5 +83,15 @@ func TestDay14Part1(t *testing.T) {
 			reactions := ReadReactions(strings.NewReader(input))
 			assert.EqualValues(t, expected[i], Day14Part1(reactions))
 		})
+	}
+}
+func TestDay14Part2(t *testing.T) {
+	for i, input := range inputs {
+		if expectedPart2[i] > 0 {
+			t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+				reactions := ReadReactions(strings.NewReader(input))
+				assert.EqualValues(t, expectedPart2[i], Day14Part2(reactions))
+			})
+		}
 	}
 }

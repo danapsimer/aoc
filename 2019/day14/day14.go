@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -75,27 +76,88 @@ func ReadReactions(in io.Reader) Reactions {
 	return reactions
 }
 
-func (reactions Reactions) React(target string, needed int) int {
-	reaction := reactions[target]
-	oreNeeded := 0
-	reactionCount := needed / reaction.outputQty
-	if needed % reaction.outputQty > 0 {
-		reactionCount += 1
-	}
-	for inName, inCount := range reaction.inputs {
-		if inName == "ORE" {
-			oreNeeded += inCount * reactionCount
-		} else {
-			oreNeeded += reactions.React(inName, inCount * reactionCount)
+type requirement struct {
+	name string
+	qty  int
+}
+
+func (reactions Reactions) React(qty int) int {
+	requiredOre := 0
+	requirementQueue := make([]requirement, 0, 1000)
+	requirementQueue = append(requirementQueue, requirement{"FUEL", qty})
+	leftOvers := make(map[string]int)
+	for len(requirementQueue) > 0 {
+		req := requirementQueue[0]
+		requirementQueue = requirementQueue[1:]
+		if req.name == "ORE" {
+			requiredOre += req.qty
+			continue
+		}
+
+		leftOversAvailable, ok := leftOvers[req.name]
+		if ok {
+			delete(leftOvers, req.name)
+		}
+		qtyNeeded := req.qty - leftOversAvailable
+		if qtyNeeded < 0 {
+			leftOvers[req.name] = -qtyNeeded
+		} else if qtyNeeded > 0 {
+			reaction, ok := reactions[req.name]
+			if !ok {
+				panic(fmt.Errorf("couldn't find requirement: %s", req.name))
+			}
+			reactionsNeeded := qtyNeeded / reaction.outputQty
+			if qtyNeeded%reaction.outputQty > 0 {
+				reactionsNeeded += 1
+			}
+			for inName, inQty := range reactions[req.name].inputs {
+				requirementQueue = append(requirementQueue, requirement{inName, inQty * reactionsNeeded})
+			}
+			if qtyNeeded < reaction.outputQty*reactionsNeeded {
+				leftOvers[req.name] = reaction.outputQty*reactionsNeeded - qtyNeeded
+			}
 		}
 	}
-	return oreNeeded
+	return requiredOre
+}
+const oreAvailable = 1000000000000
+func Day14Part2(reactions Reactions) int {
+	lowerLimit :=  oreAvailable / reactions.React(1)
+	dir := 1
+	step := 1000000
+	qty := lowerLimit
+	for {
+		ore := reactions.React(qty)
+		if dir == 1 {
+			if ore > oreAvailable {
+				dir = -1
+				if step > 1 {
+					step = step / 10
+				}
+			} else {
+				qty += step
+			}
+		} else {
+			if ore < oreAvailable {
+				dir = 1
+				if step > 1 {
+					step = step / 10
+				} else {
+					return qty
+				}
+			} else {
+				qty -= step
+			}
+		}
+	}
 }
 
 func Day14Part1(reactions Reactions) int {
-	return reactions.React("FUEL", 1)
+	return reactions.React(1)
 }
 
 func main() {
-
+	reactions := ReadReactions(os.Stdin)
+	log.Printf("part1 = %d", Day14Part1(reactions))
+	log.Printf("part2 = %d", Day14Part2(reactions))
 }

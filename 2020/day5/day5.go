@@ -5,22 +5,41 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"os"
 )
 
+var occupiedEmojis = []string{
+	"\U0001F64D", "\U0001F64E", "\U0001F648", "\U0001F469", "\U0001F468",
+}
+
 func main() {
 	seating := readSeating(os.Stdin)
+	fmt.Println("       ╭──╮")
+	fmt.Println("      ╱    ╲")
+	fmt.Println("     ╱      ╲")
+	fmt.Println("    ╱        ╲")
+	fmt.Println("   ╱          ╲")
+	fmt.Println("  ╱            ╲")
+	fmt.Println(" ╱              ╲")
+	fmt.Println("╱                ╲")
+	fmt.Println("┣━━━━━━━━━━━━━━━━━┫")
 	for r := uint8(0); r < 128; r++ {
+		fmt.Print("┃")
 		for c := uint8(0); c < 8; c++ {
 			bp := NewBoardingPass(r, c)
 			if seating[bp] {
-				fmt.Print("X")
+				fmt.Print(occupiedEmojis[rand.Intn(len(occupiedEmojis))])
 			} else {
-				fmt.Print(".")
+				fmt.Print("\U0001F4BA")
+			}
+			if c == 3 {
+				fmt.Print(" ")
 			}
 		}
-		fmt.Println()
+		fmt.Println("┃")
 	}
+	fmt.Println("┗━━━━━━━━━━━━━━━━━┛")
 	foundLargest := false
 	for bp := boardingPass(1023); bp < 1024; bp-- {
 		if seating[bp] {

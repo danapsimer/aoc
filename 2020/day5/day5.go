@@ -8,13 +8,12 @@ import (
 	"os"
 )
 
-type grid [128][8]bool
-
 func main() {
 	seating := readSeating(os.Stdin)
-	for _, row := range seating {
-		for _, col := range row {
-			if col {
+	for r := uint8(0); r < 128; r++ {
+		for c := uint8(0); c < 8; c++ {
+			bp := NewBoardingPass(r, c)
+			if seating[bp] {
 				fmt.Print("X")
 			} else {
 				fmt.Print(".")
@@ -23,58 +22,56 @@ func main() {
 		fmt.Println()
 	}
 	foundLargest := false
-	for r := 127; r >= 0; r-- {
-		for c := 7; c >= 0; c-- {
-			if seating[r][c] {
-				if !foundLargest {
-					log.Printf("largest seat id is: %d", r*8+c)
-					foundLargest = true
-				}
-			} else {
-				nr := r
-				nc := c + 1
-				if nc == 8 {
-					nr += 1
-					nc = 0
-				}
-				pr := r
-				pc := c - 1
-				if c < 0 {
-					c = 7
-					pr -= 1
-				}
-				if nr < 128 && seating[nr][nc] && seating[pr][pc] {
-					log.Printf("Your seat is %d, %d, id = %d", r, c, r*8+c)
-				}
+	for bp := boardingPass(1023); bp < 1024; bp-- {
+		if seating[bp] {
+			if !foundLargest {
+				log.Printf("largest seat id is: %d", bp)
+				foundLargest = true
+			}
+		} else {
+			n := bp + 1
+			p := bp - 1
+			if (p < 1024 && seating[p]) && (n < 1024 && seating[n]) {
+				log.Printf("Your seat is %d, %d, id = %d", bp.row(), bp.col(), bp)
 			}
 		}
 	}
 }
 
-func binaryPosition(coord string, start, end int) int {
-	size := end - start
-	if size == 1 {
-		return start
-	}
-	c := coord[0]
-	switch {
-	case c == 'F' || c == 'L':
-		return binaryPosition(coord[1:], start, start+size/2)
-	case c == 'B' || c == 'R':
-		return binaryPosition(coord[1:], start+size/2, end)
-	default:
-		panic(fmt.Errorf("invalid seat coordinate character encountered: %v", c))
-	}
+type boardingPass uint16
+
+func (bp boardingPass) row() uint8 {
+	return uint8(bp >> 3)
 }
 
-func readSeating(r io.Reader) *grid {
+func (bp boardingPass) col() uint8 {
+	return uint8(bp & 0x0007)
+}
+
+func NewBoardingPass(r, c uint8) boardingPass {
+	return boardingPass(uint16(r)<<3 | uint16(c))
+}
+
+func ParseBoardingPass(bpstr string) boardingPass {
+	var bp boardingPass
+	for idx, c := range bpstr {
+		if idx > 0 {
+			bp <<= 1
+		}
+		if c == 'B' || c == 'R' {
+			bp |= 0x1
+		}
+	}
+	return bp
+}
+
+func readSeating(r io.Reader) []bool {
 	scanner := bufio.NewScanner(r)
-	var g grid
+	g := make([]bool, 1024)
 	for scanner.Scan() {
 		line := scanner.Text()
-		row := binaryPosition(line[0:7], 0, 128)
-		col := binaryPosition(line[7:10], 0, 8)
-		g[row][col] = true
+		bp := ParseBoardingPass(line)
+		g[bp] = true
 	}
-	return &g
+	return g
 }

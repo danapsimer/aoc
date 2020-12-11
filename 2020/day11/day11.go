@@ -46,7 +46,7 @@ func (g grid) equals(o grid) bool {
 	return false
 }
 
-func (g grid) applyRules() grid {
+func (g grid) traverseSeats(traversFn func(dest, src grid, x, y int)) grid {
 	cp := make(grid, g.height())
 	copy(cp, g)
 	for y := 0; y < g.height(); y++ {
@@ -55,58 +55,57 @@ func (g grid) applyRules() grid {
 			if c == "." {
 				continue
 			}
-			adjOccupiedCount := 0
-			for yd := -1; yd <= 1; yd++ {
-				for xd := -1; xd <= 1; xd++ {
-					if (xd != 0 || yd != 0) && g.get(x+xd, y+yd) == "#" {
-						adjOccupiedCount += 1
-					}
-				}
-			}
-			if c == "L" && adjOccupiedCount == 0 {
-				cp[y] = cp[y][:x] + "#" + cp[y][x+1:]
-			} else if c == "#" && adjOccupiedCount >= 4 {
-				cp[y] = cp[y][:x] + "L" + cp[y][x+1:]
-			}
+			traversFn(cp, g, x, y)
 		}
 	}
 	return cp
 }
 
-func (g grid) applyRulesPart2() grid {
-	cp := make(grid, g.height())
-	copy(cp, g)
-	for y := 0; y < g.height(); y++ {
-		for x := 0; x < g.width(); x++ {
-			c := g.get(x, y)
-			if c == "." {
-				continue
+func (g grid) applyRules() grid {
+	return g.traverseSeats(func(cp, g grid, x, y int) {
+		c := g.get(x,y)
+		adjOccupiedCount := 0
+		for yd := -1; yd <= 1; yd++ {
+			for xd := -1; xd <= 1; xd++ {
+				if (xd != 0 || yd != 0) && g.get(x+xd, y+yd) == "#" {
+					adjOccupiedCount += 1
+				}
 			}
-			visibleOccupiedCount := 0
-			for yd := -1; yd <= 1; yd++ {
-				for xd := -1; xd <= 1; xd++ {
-					if xd == 0 && yd == 0 {
-						continue
-					}
-					for nx, ny := x+xd, y+yd; 0 <= nx && nx < g.width() && 0 <= ny && ny < g.height(); nx, ny = nx+xd, ny+yd {
-						nc := g.get(nx, ny)
-						if nc == "#" {
-							visibleOccupiedCount += 1
-							break
-						} else if nc == "L" {
-							break
-						}
+		}
+		if c == "L" && adjOccupiedCount == 0 {
+			cp[y] = cp[y][:x] + "#" + cp[y][x+1:]
+		} else if c == "#" && adjOccupiedCount >= 4 {
+			cp[y] = cp[y][:x] + "L" + cp[y][x+1:]
+		}
+	})
+}
+
+func (g grid) applyRulesPart2() grid {
+	return g.traverseSeats(func(cp, g grid, x, y int) {
+		c := g.get(x,y)
+		visibleOccupiedCount := 0
+		for yd := -1; yd <= 1; yd++ {
+			for xd := -1; xd <= 1; xd++ {
+				if xd == 0 && yd == 0 {
+					continue
+				}
+				for nx, ny := x+xd, y+yd; 0 <= nx && nx < g.width() && 0 <= ny && ny < g.height(); nx, ny = nx+xd, ny+yd {
+					nc := g.get(nx, ny)
+					if nc == "#" {
+						visibleOccupiedCount += 1
+						break
+					} else if nc == "L" {
+						break
 					}
 				}
 			}
-			if c == "L" && visibleOccupiedCount == 0 {
-				cp[y] = cp[y][:x] + "#" + cp[y][x+1:]
-			} else if c == "#" && visibleOccupiedCount >= 5 {
-				cp[y] = cp[y][:x] + "L" + cp[y][x+1:]
-			}
 		}
-	}
-	return cp
+		if c == "L" && visibleOccupiedCount == 0 {
+			cp[y] = cp[y][:x] + "#" + cp[y][x+1:]
+		} else if c == "#" && visibleOccupiedCount >= 5 {
+			cp[y] = cp[y][:x] + "L" + cp[y][x+1:]
+		}
+	})
 }
 
 func (g grid) String() string {
